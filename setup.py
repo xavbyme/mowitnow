@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='mowitnow',
-      version='0.1',
+      version='0.2',
       description='MowItNow controller',
       url='https://github.com/xavbyme/mowitnow.git',
       author='XRU',
