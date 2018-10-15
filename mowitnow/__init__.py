@@ -23,14 +23,16 @@ PYPI
 	https://pypi.org/project/mowitnow
 
 HISTORY
-	0.02	XRU 	12/10/2018 Version fonctionnelle
-    0.01 	XRU 	12/10/2018 Versoion initiale - Structure - Git - Deploiement Pypi.org
+	0.03	XRU		13/10/2018	Corrections de la classe mower - Ajout de la classe mowSwarm - Factorisation
+	0.02	XRU 	12/10/2018	Version fonctionnelle
+    0.01 	XRU 	12/10/2018	Versoion initiale - Structure - Git - Deploiement Pypi.org
 """
 
 # Impots
 import argparse
 import os
 import sys
+from copy import copy
 
 # Fonction de parsing et récupération des arguments
 def getArguments():
@@ -57,13 +59,6 @@ def parserSpace(stringSplit):
 def errorExit(str):
 	sys.exit(str)
 
-# Sortie en succes avec affichage de la position des tondeuses
-def gracefulExit(mowArray):
-	# Parcourt la l array de tondeuses et affiche la position
-	for num,mow in enumerate(mowArray):
-		print "Tondeuse ", num , "- Position finale :"
-		mow.displayPos()
-
 # Classe : field - qui decrit le terrain sur lequel les tondeuses vont evoluer
 class field:
 	'Delimitation du terrain de 0,0 à x,y.'
@@ -79,64 +74,87 @@ class field:
 	def displayBorders(self):
 		print "Terrain : (", self.min_x,",", self.min_y,") (", self.max_x,",", self.max_y,")\n"
 
+# Classe mowSwarm - qui decrit un ensemble de tondeuses
+class mowSwarm:
+	swarm = []
+
+	# Constructor mowSwarm
+	def __init__(self):
+		pass
+
+	# Ajoute une tondeuse a l essaim de tondeuses
+	def addMow(self, mow):
+		self.swarm.append(mow)
+
+	# Fonction d'affichage de l essaim
+	def displaySwarm(self):
+		for num,mow in enumerate(self.swarm):
+			print "Essaim - Tondeuse ", num , "- Position :"
+			mow.displayPos()
+
 # Classe mower - qui decrit la position initale de la tondeuse, sa position apres mouvement l action de mouvement
 class mower:
 	'Position de la tondeuse : x,y,orientation.'
 
 	# Constructor mower
-	def __init__(self,field,posXYA):
+	def __init__(self,field,num,posXYA):
+		# num of the mower
+		self.num=num
 		# x abscisse
-		mower.posX=int(posXYA[0])
+		self.posX=int(posXYA[0])
 		# y ordonnee
-		mower.posY=int(posXYA[1])
+		self.posY=int(posXYA[1])
 		# A orientation N,E,W,S
-		mower.posA=posXYA[2]
+		self.posA=posXYA[2]
+
+	def __getitem__(self,key):
+		return self
 
 	# Fonction d affichage des attributs
 	def displayPos(self):
-		print "Mower Position : (", self.posX,",", self.posY,",", self.posA,")\n"
+		print "Mower ",self.num ," Position : (", self.posX,",", self.posY,",", self.posA,")\n"
 
 	# Fonction de mouvement - Met a jour les attributs x,y,A de la tondeuse apres mouvement
 	def moveMower(self,char):
 		# Test - Avancer
 		if char == "A":
 			# Test - Bordures du terrain - Deplacement
-			if mower.posA == "N":
-				if mower.posY < field.max_y:
+			if self.posA == "N":
+				if self.posY < field.max_y:
 					# Deplacement selon y -> y+1
-					mower.posY+=1
-			elif mower.posA == "E":
-				if mower.posX < field.max_x:
+					self.posY+=1
+			elif self.posA == "E":
+				if self.posX < field.max_x:
 					# Deplacement selon x -> x+1
-					mower.posX+=1
-			elif mower.posA == "W":
-				if mower.posX > field.min_x:
+					self.posX+=1
+			elif self.posA == "W":
+				if self.posX > field.min_x:
 					# Deplacement selon x -> x-1
-					mower.posX-=1
-			elif mower.posA == "S":
-				if mower.posY > field.min_y:
+					self.posX-=1
+			elif self.posA == "S":
+				if self.posY > field.min_y:
 					# Deplacement selon y -> y-1 
-					mower.posY-=1
+					self.posY-=1
 		# Test - Rotation gauche selon position actuelle
 		elif char == "G":
-			if mower.posA == "N":
-				mower.posA = "W"
-			elif mower.posA == "W":
-				mower.posA = "S"
-			elif mower.posA == "S":
-				mower.posA = "E"
-			elif mower.posA == "E":
-				mower.posA = "N"
+			if self.posA == "N":
+				self.posA = "W"
+			elif self.posA == "W":
+				self.posA = "S"
+			elif self.posA == "S":
+				self.posA = "E"
+			elif self.posA == "E":
+				self.posA = "N"
 		# Test - Rotation droite selon position actuelle
 		elif char == "D":
-			if mower.posA == "N":
-				mower.posA = "E"
-			elif mower.posA == "E":
-				mower.posA = "S"
-			elif mower.posA == "S":
-				mower.posA = "W"
-			elif mower.posA == "W":
-				mower.posA = "N"
+			if self.posA == "N":
+				self.posA = "E"
+			elif self.posA == "E":
+				self.posA = "S"
+			elif self.posA == "S":
+				self.posA = "W"
+			elif self.posA == "W":
+				self.posA = "N"
 
 # Main
 if __name__ == '__main__':
@@ -147,10 +165,11 @@ if __name__ == '__main__':
 	# Recuperation du path du fichier de controle
 	filepath=args.file
 
-	# Initialisation de l array de tondeuses
-	tondeuseArray = []
 	# Initialisation de l index de l array de tondeuses
 	indMower = 0
+
+	# Instanciation d un essaim de tondeuses
+	essaimTondeuse = mowSwarm()
 
 	# Test de presence du fichier
 	if os.path.exists(filepath) is not True:
@@ -170,26 +189,27 @@ if __name__ == '__main__':
 			terrain = field(line)
 			# Affichage des caracteristiques du terrain
 			terrain.displayBorders()
-
+		
 		# Case ligne 1 - position initiale de la tondeuse
 		elif (num % 2) == 1:
-			# Ajout d une instance de classe mower a l array
-			tondeuseArray.append(mower(terrain,line))
-			# Affichage de la position initiale
-			print "Tondeuse ", indMower , " - Position initiale :"
-			tondeuseArray[indMower].displayPos()
+			# Instanciation d une tondeuse
+			tondeuse = mower(terrain,indMower,line)
+			# Affichage de la position
+			tondeuse.displayPos()
 
-		# Case ligne 2 - deplacement
-		elif (num % 1) == 0:
-			# Lecture du string d instructions de mouvements de la tondeuse
+		# # Case ligne 2 - deplacement
+		elif (num % 2) == 0:
+		# 	# Lecture du string d instructions de mouvements de la tondeuse
 			for ch in line[0]:
-				# Instruction de mouvement
-				tondeuseArray[indMower].moveMower(ch)
-			# Incrementation de l indice necessaire a l array de tondeuses
+		# 		# Instruction de mouvement
+				tondeuse.moveMower(ch)
+		# 	Ajout d une tondeuse a l instance d essaim cree
+			essaimTondeuse.addMow(tondeuse)
+		# 	Incrementation de l indice necessaire a l array de tondeuses
 			indMower+=1
 
-	gracefulExit(tondeuseArray)
-
+	# Affichage de la position des tondeuses de l essaim
+	essaimTondeuse.displaySwarm()
 
 
 
