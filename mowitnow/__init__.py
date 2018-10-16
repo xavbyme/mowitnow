@@ -3,7 +3,7 @@
 
 """
 SYNOPSIS
-    MowItNow_Controller.py [-h,--help] [-f,--file] [-v,--verbose]
+    MowItNow_Controller.py [-h,--help] [-f,--file]
 
 DESCRIPTION
     Programme permettant de controler un ensemble de tondeuses MowItNow
@@ -23,9 +23,10 @@ PYPI
 	https://pypi.org/project/mowitnow
 
 HISTORY
-	0.03	XRU	13/10/2018	Corrections de la classe mower - Ajout de la classe mowSwarm - Factorisation
-	0.02	XRU	12/10/2018	Version fonctionnelle
-	0.01 	XRU	12/10/2018	Versoion initiale - Structure - Git - Deploiement Pypi.org
+	1.0		XRU 15/10/2018	Packaging - Ajout des tests
+	0.3		XRU	13/10/2018	Corrections de la classe mower - Ajout de la classe mowSwarm - Factorisation
+	0.2		XRU	12/10/2018	Version fonctionnelle
+	0.1 	XRU	12/10/2018	Versoion initiale - Structure - Git - Deploiement Pypi.org
 """
 
 # Imports
