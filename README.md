@@ -2,15 +2,15 @@ MowItNow Controller
 ------------------
 
 SYNOPSIS
-    MowItNow_Controller.py [-h,--help] [-f,--file]
+    MowItNow_Controller.py [-h,--help] [-f,--file]               
 
 DESCRIPTION
     Programme permettant de controler un ensemble de tondeuses MowItNow
     Specifications completes contenues dans le package - "ExerciceTechnique - La Tondeuse.pdf"
 
 ARGUMENTS
-    -h, --help		Show this help message and exit
-    -f, --file		Path complet du fichier d'entree du programme contenant les instructions de controle
+    -h, --help          Show this help message and exit
+    -f, --file          Path complet du fichier d'entree du programme contenant les instructions de controle
 
 INPUT
         Le programme traite un fichier de contrôle qui contient:
