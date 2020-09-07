@@ -33,66 +33,61 @@ HISTORY
 import os
 import sys
 
-# Module contenant les classes 
-import mowers
+# Module contenant les classes
+import mowitnow.mowers
+
 # Module contenant les fonctions utilisees
-import tools
+import mowitnow.tools
 
 # Main
-if __name__ == '__main__':
-	
-	# Recuperation des arguments
-	args = tools.getArguments()
-	arrayArgs = args.parse_args()
+if __name__ == "__main__":
+    # Recuperation des arguments
+    args = tools.getArguments()
+    arrayArgs = args.parse_args()
 
-	# Recuperation du path du fichier de controle
-	filepath = arrayArgs.file
+    # Recuperation du path du fichier de controle
+    filepath = arrayArgs.file
 
-	# Initialisation de l index de l array de tondeuses
-	indMower = 0
+    # Initialisation de l index de l array de tondeuses
+    indMower = 0
 
-	# Instanciation d un essaim de tondeuses
-	essaimTondeuse = mowers.mowSwarm()
+    # Instanciation d un essaim de tondeuses
+    essaimTondeuse = mowers.mowSwarm()
 
-	# Test de presence du fichier
-	if os.path.exists(filepath) is not True:
-		tools.errorExit("Erreur : Fichier de controle introuvable.")
-	
-	# Ouverture du fichier de controle
-	fileController = open(filepath)
+    # Test de presence du fichier
+    if not os.path.exists(filepath):
+        tools.errorExit("Erreur : Fichier de controle introuvable.")
 
-	# Lecture du fichier ligne a ligne
-	for num, line in enumerate(fileController):
-		# Parsing de la ligne extraite du fichier
-		line = tools.splitSpace(line)
+    # Ouverture du fichier de controle
+    with open(filepath, "r") as fileReader:
+        # Lecture du fichier ligne a ligne
+        for num, line in enumerate(fileReader):
+            # Parsing de la ligne extraite du fichier
+            line = tools.splitSpace(line)
 
-		# Case ligne 0 - taille de la matrice
-		if num == 0:
-			# Construction d une instance de field
-			terrain = mowers.field(line)
-			# Affichage des caracteristiques du terrain
-			terrain.displayBorders()
-		
-		# Case ligne 1 - position initiale de la tondeuse
-		elif (num % 2) == 1:
-			# Instanciation d une tondeuse
-			tondeuse = mowers.mower(terrain,indMower,line)
-			# Affichage de la position
-			tondeuse.displayPos()
+            # Case ligne 0 - taille de la matrice
+            if num == 0:
+                # Construction d une instance de field
+                terrain = mowers.field(line)
+                # Affichage des caracteristiques du terrain
+                terrain.displayBorders()
+            # Case ligne 1 - position initiale de la tondeuse
+            elif (num % 2) == 1:
+                # Instanciation d une tondeuse
+                tondeuse = mowers.mower(terrain, indMower, line)
+                # Affichage de la position
+                tondeuse.displayPos()
 
-		# Case ligne 2 - deplacement
-		elif (num % 2) == 0:
-			# Lecture du string d instructions de mouvements de la tondeuse
-			for ch in line[0]:
-				# Instruction de mouvement
-				tondeuse.moveMower(ch)
-			# Ajout d une tondeuse a l instance d essaim cree
-			essaimTondeuse.addMow(tondeuse)
-			# Incrementation de l indice necessaire a l array de tondeuses
-			indMower+=1
+            # Case ligne 2 - deplacement
+            elif (num % 2) == 0:
+                # Lecture du string d instructions de mouvements de la tondeuse
+                for ch in line[0]:
+                    # Instruction de mouvement
+                    tondeuse.moveMower(ch)
+                # Ajout d une tondeuse a l instance d essaim cree
+                essaimTondeuse.addMow(tondeuse)
+                # Incrementation de l indice necessaire a l array de tondeuses
+                indMower += 1
 
-	# Affichage de la position des tondeuses de l essaim
-	essaimTondeuse.displaySwarm()
-
-
-
+    # Affichage de la position des tondeuses de l essaim
+    essaimTondeuse.displaySwarm()
